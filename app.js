@@ -3,17 +3,18 @@
 const http = require("http")
 const express = require("express")
 const {sequelize, Message, ValidationError} = require("./db")
+const {cors, auth} = require("./middleware");
 
 let app = express();
 // lets u define settings for app /optional
 
 app.set("json spaces",2);
-app.use(express.json());
+app.use(cors, auth, express.json())
 
 //Create
-app.post("/messages", async(req,res,next)=>{
+app.post("/messages", async(_req,res,next)=>{
     try {
-        let message = await Message.create({message: req.body.message})
+        let message = await Message.create({message: _req.body.message})
         res.status(201).send(message);
     } catch (err) {
         if (err instanceof ValidationError){

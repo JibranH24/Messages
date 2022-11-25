@@ -38,11 +38,16 @@ exports.User.init({
         primaryKey: true,
     },
     username:{
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false
     },
     password: {
-       type: DataTypes.STRING 
+       type: DataTypes.STRING ,
+       allowNull: false
     }
+},
+{
+    sequelize: exports.sequelize,
 }
 
 )
