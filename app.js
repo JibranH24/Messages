@@ -1,16 +1,47 @@
 "use strict"
 
+const bcrypt = require("bcryptjs")
 const http = require("http")
+const jwt = require("jsonwebtoken")
 const express = require("express")
-const {sequelize, Message, ValidationError} = require("./db")
+const {sequelize, Message, User, ValidationError} = require("./db")
 const {cors, auth} = require("./middleware");
+const {createUser} = require("./seed.js") 
 
 let app = express();
 // lets u define settings for app /optional
 
 app.set("json spaces",2);
-app.use(cors, auth, express.json())
+//app.use(cors, auth, express.json())
+app.use(express.json())
 
+let secret = process.env.SIGNING_SECRET
+
+
+app.post("/users/register",async(req,res)=>{
+    const {username, password} = req.body
+    //const hashed = await bcrypt.hash(password,)
+    const user = await createUser(username,password)
+    console.log(user)
+    const token = jwt.sign({username, id:user.id},secret)
+    res.status(200).send({message:"user has been registered and logged in.", token})
+})
+
+app.post("/users/login", async(req,res,next)=>{
+    const {username,password} = req.body
+    const user = await User.findOne({where: {username}})
+    if(user.password){
+        const matches = await bcrypt.compare(password, user.password)
+        if(matches){
+            const token = await jwt.sign({username:user.username, id:user.id}, secret)
+            res.status(200).send({message:"Logged In", token})
+        }
+    }
+})
+
+app.get("/", (req,res) =>{
+    
+})
 //Create
 app.post("/messages", async(_req,res,next)=>{
     try {

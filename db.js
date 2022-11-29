@@ -1,7 +1,7 @@
 "use strict"
 
 const path = require("path");
-const {Sequelize, Model, User, DataTypes, ValidationError } = require("sequelize");
+const {Sequelize, Model, DataTypes, ValidationError } = require("sequelize");
 
 exports.sequelize = new Sequelize({
     dialect:"sqlite",
